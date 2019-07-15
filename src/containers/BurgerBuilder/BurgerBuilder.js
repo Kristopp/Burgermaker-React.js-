@@ -1,0 +1,82 @@
+import React, { Component } from "react";
+import Aux from "../../hoc/Aux";
+import Burger from "../../components/Burger/Burger";
+import BuildControls from "../../containers/BurgerBuilder/BuildControl/BuildControls";
+//Global const
+const INGREDIENT_PRICES = {
+  salad: 0.3,
+  cheese: 0.4,
+  meat: 1.3,
+  bacon: 0.7
+};
+
+export class BurgerBuilder extends Component {
+  state = {
+    ingredients: {
+      salad: 0,
+      bacon: 0,
+      cheese: 0,
+      meat: 0
+    },
+    price: 0
+  };
+  //type is a argument passed to  BuilControls
+  addIngridentHanler = type => {
+    const oldCount = this.state.ingredients[type];
+
+    const updatedCount = oldCount + 1;
+    const updatedIngredients = {
+      ...this.state.ingredients
+    };
+
+    updatedIngredients[type] = updatedCount;
+    const priceAddittion = INGREDIENT_PRICES[type];
+    const oldPrice = this.state.price;
+    const newPrice = oldPrice + priceAddittion;
+    this.setState({ price: newPrice, ingredients: updatedIngredients });
+  };
+  removeIngridentHandeler = type => {
+    const oldCount = this.state.ingredients[type];
+    //if condion is true then nothing happens
+    if (oldCount <= 0) {
+      return;
+    }
+    const updatedCount = oldCount - 1;
+    const updatedIngredients = {
+      ...this.state.ingredients
+    };
+
+    updatedIngredients[type] = updatedCount;
+    const priceDeduction = INGREDIENT_PRICES[type];
+    const oldPrice = this.state.price;
+    const newPrice = oldPrice - priceDeduction;
+    this.setState({ price: newPrice, ingredients: updatedIngredients });
+  };
+  //For loop cheks if value of ingrident key
+  //if it is <= 0 condion
+
+  render() {
+    //condion before returning JSX
+    //{salad: true,meat:false,...}
+    const disabledInfo = {
+      ...this.state.ingredients
+    };
+    for (let key in disabledInfo) {
+      disabledInfo[key] = disabledInfo[key] <= 0;
+    }
+
+    return (
+      <Aux>
+        <Burger ingredients={this.state.ingredients} />
+        <BuildControls
+          ingrdientAdded={this.addIngridentHanler}
+          ingrdientRemoved={this.removeIngridentHandeler}
+          disabled={disabledInfo}
+          price={this.state.price}
+        />
+      </Aux>
+    );
+  }
+}
+
+export default BurgerBuilder;
